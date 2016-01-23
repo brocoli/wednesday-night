@@ -41,7 +41,7 @@ local function neglect(responder)
 end
 
 
-local function sendMessage(message, ...)
+local function send(message, ...)
     local ret = {}
 
     local entries = registry[message]
@@ -61,6 +61,6 @@ local Messages = {}
 Messages.listen = listen
 Messages.neglect = neglect
 
-Messages.sendMessage = sendMessage
+Messages.send = send
 
 return Messages

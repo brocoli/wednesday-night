@@ -5,17 +5,6 @@ local Util = require("Util")
 
 
 
--- Specs
-
--- config = {
---     beforeStart -- function
---     afterStart -- function
---     beforeStop -- function
---     afterStop -- function
--- }
-
-
-
 -- Private methods
 
 local function startChildren(gameObject)
@@ -35,48 +24,40 @@ end
 -- Methods
 
 local function start(gameObject)
-    local config = gameObject.config
-
-    local beforeStart = config.beforeStart
-    if beforeStart then
-        beforeStart(gameObject)
-    end
     for _, component in pairs(gameObject.components) do
-        component:beforeStart()
+        local beforeStart = component.beforeStart
+        if beforeStart then
+            component:beforeStart()
+        end
     end
 
     gameObject.started = true
     startChildren(gameObject)
 
-    local afterStart = config.afterStart
-    if afterStart then
-        afterStart(gameObject)
-    end
     for _, component in pairs(gameObject.components) do
-        component:afterStart()
+        local afterStart = component.afterStart
+        if afterStart then
+            component:afterStart()
+        end
     end
 end
 
 local function stop(gameObject)
-    local config = gameObject.config
-
-    local beforeStop = config.beforeStop
-    if beforeStop then
-        beforeStop(gameObject)
-    end
     for _, component in pairs(gameObject.components) do
-        component:beforeStop()
+        local beforeStop = component.beforeStop
+        if beforeStop then
+            component:beforeStop()
+        end
     end
 
     stopChildren(gameObject)
     gameObject.started = false
 
-    local afterStop = config.afterStop
-    if afterStop then
-        afterStop(gameObject)
-    end
     for _, component in pairs(gameObject.components) do
-        component:afterStop()
+        local afterStop = component.afterStop
+        if afterStop then
+            component:afterStop()
+        end
     end
 end
 
@@ -106,7 +87,7 @@ local function changeParent(gameObject, newParent, index)
     end
 end
 
-local function insertComponent(gameObject, componentName, component)
+local function compose(gameObject, componentName, component)
     gameObject.components[componentName] = component
     component.gameObject = gameObject
 
@@ -124,13 +105,13 @@ local gameObjectMt = {
     stop  = stop,
     unparent = unparent,
     changeParent = changeParent,
+    compose = compose,
 }
 gameObjectMt.mt = gameObjectMt
 gameObjectMt.__index = gameObjectMt
 
-local function new(config)
+local function new()
     return setmetatable({
-        config = config,
         started = false,
         children = {},
         parent = nil,
@@ -138,13 +119,13 @@ local function new(config)
     }, gameObjectMt)
 end
 
-local mainGameObject = new({})
-mainGameObject:start()
+local rootGameObject = new({})
+rootGameObject:start()
 
 
 local GameObject = {}
 
 GameObject.new = new
-GameObject.main = main
+GameObject.root = rootGameObject
 
 return GameObject

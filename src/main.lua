@@ -1,27 +1,44 @@
 
-function love.load()
+local Messages = require("Messages")
+local GameObject = require("GameObject")
+
+local Responder = require("Components.Responder")
+local Transform = require("Components.Transform")
+
+
+
+function love.load(...)
+    GameObject.root:load(...)
 end
 
-function love.update(dt)
+function love.update(...)
+    GameObject.root:update(...)
 end
 
-function love.draw()
+function love.draw(...)
+    GameObject.root:draw(...)
 end
 
-function love.mousepressed(x, y, button)
+function love.mousepressed(...)
+    Messages.send("love.mousepressed", ...)
 end
 
-function love.mousereleased(x, y, button)
+function love.mousereleased(...)
+    Messages.send("love.mousereleased", ...)
 end
 
-function love.keypressed(key)
+function love.keypressed(...)
+    Messages.send("love.keypressed", ...)
 end
 
-function love.keyreleased(key)
+function love.keyreleased(...)
+    Messages.send("love.keyreleased", ...)
 end
 
-function love.focus(f)
+function love.focus(...)
+    Messages.send("love.focus", ...)
 end
 
-function love.quit(f)
+function love.quit(...)
+    Messages.send("love.quit", ...)
 end
