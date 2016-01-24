@@ -1,4 +1,6 @@
 
+-- Class
+
 local function new()
     return {
         x = 0,

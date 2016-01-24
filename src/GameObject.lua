@@ -112,20 +112,20 @@ gameObjectMt.__index = gameObjectMt
 
 local function new()
     return setmetatable({
-        started = false,
-        children = {},
         parent = nil,
+        children = {},
         components = {},
+        started = false,
     }, gameObjectMt)
 end
 
-local rootGameObject = new({})
-rootGameObject:start()
+local root = new({})
+root:start()
 
 
 local GameObject = {}
 
 GameObject.new = new
-GameObject.root = rootGameObject
+GameObject.root = root
 
 return GameObject

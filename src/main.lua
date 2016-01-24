@@ -1,4 +1,6 @@
 
+-- Require
+
 local Messages = require("Messages")
 local GameObject = require("GameObject")
 
@@ -7,7 +9,18 @@ local Transform = require("Components.Transform")
 
 
 
+-- Game
+
+local function main()
+
+end
+
+
+
+-- Love callbacks
+
 function love.load(...)
+    main()
     GameObject.root:load(...)
 end
 
