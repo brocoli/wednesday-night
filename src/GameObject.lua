@@ -48,6 +48,19 @@ local function stop(gameObject)
 end
 
 
+local function pause(gameObject)
+    gameObject.notPaused = false
+end
+
+local function resume(gameObject)
+    gameObject.notPaused = true
+end
+
+local function togglePause(gameObject)
+    gameObject.notPaused = not gameObject.notPaused
+end
+
+
 local function compose(gameObject, componentName, component)
     gameObject.components[componentName] = component
     component.gameObject = gameObject
@@ -110,20 +123,22 @@ local function load(gameObject)
 end
 
 local function update(gameObject, dt)
-    local onUpdate = gameObject.onUpdate
-    if onUpdate then
-        onUpdate(gameObject, dt)
-    end
-
-    for _, child in ipairs(gameObject.children) do
-        if child.started then
-            child:update(dt)
+    if gameObject.notPaused then
+        local onUpdate = gameObject.onUpdate
+        if onUpdate then
+            onUpdate(gameObject, dt)
         end
-    end
 
-    local afterUpdate = gameObject.afterUpdate
-    if afterUpdate then
-        afterUpdate(gameObject, dt)
+        for _, child in ipairs(gameObject.children) do
+            if child.started then
+                child:update(dt)
+            end
+        end
+
+        local afterUpdate = gameObject.afterUpdate
+        if afterUpdate then
+            afterUpdate(gameObject, dt)
+        end
     end
 end
 
@@ -160,6 +175,10 @@ local gameObjectMt = {
     start = start,
     stop = stop,
 
+    pause = pause,
+    resume = resume,
+    togglePause = togglePause,
+
     compose = compose,
 
     removeParent = removeParent,
@@ -177,6 +196,7 @@ local function new(params)
         children = {},
         components = {},
         started = false,
+        notPaused = true,
         onLoad = params.onLoad,
         afterLoad = params.afterLoad,
         onUpdate = params.onUpdate,

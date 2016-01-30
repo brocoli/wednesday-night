@@ -51,7 +51,8 @@ local badReplyTexts = {
     [3] = {"Bad Reply 3 text", "sample"},
 }
 
-local function prepareAction(conversationScene, notIndex)
+local function prepareAction(conversationScene, index)
+    local notIndex = (index + love.math.random(0,1))%3 + 1
     insertQuestionBalloon(conversationScene, questionTexts[notIndex])
 
     conversationScene.notIndex = notIndex
@@ -60,7 +61,6 @@ end
 local function runAction(conversationScene, index)
     insertAnswerBalloon(conversationScene, answerTexts[index])
 
-    print(index, conversationScene.notIndex)
     if index == conversationScene.notIndex then
         insertQuestionBalloon(conversationScene, badReplyTexts[index])
     else
@@ -70,7 +70,6 @@ end
 
 
 local function onLoad(conversationScene)
-    print("onLoad conversationScene")
     local sceneFrame = SceneFrame.new()
     sceneFrame:changeParent(conversationScene)
     conversationScene.sceneFrame = sceneFrame
@@ -82,8 +81,8 @@ local function onLoad(conversationScene)
             local function maskStencil()
                 love.graphics.rectangle("fill", transform.x - width/4 + 5, transform.y - height/4 + 5, width/2 - 10, height/2 - 10)
             end
-
             love.graphics.stencil(maskStencil, "replace", 1)
+
             love.graphics.setStencilTest("greater", 0)
         end,
         afterDraw = function(mask, transform)

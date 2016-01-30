@@ -12,13 +12,13 @@ local function onLoad(gameScene)
     conversationScene:changeParent(gameScene)
     gameScene.bottomRightScene = conversationScene
 
-    local actionController = ActionController.new()
+    local actionController = ActionController.new(5, 0.01)
     actionController:changeParent(gameScene)
     gameScene.actionController = actionController
 end
 
 local function afterLoad(gameScene)
-    Messages.send("prepareAction", 1)
+    gameScene.actionController:prepareNextAction()
 end
 
 local function onDraw(gameScene)
