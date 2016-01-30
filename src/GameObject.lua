@@ -2,6 +2,7 @@
 -- Require
 
 local Util = require("Util")
+local Transform = require("Transform")
 
 
 
@@ -25,8 +26,7 @@ end
 
 local function start(gameObject)
     for _, component in pairs(gameObject.components) do
-        local beforeStart = component.beforeStart
-        if beforeStart then
+        if component.beforeStart then
             component:beforeStart()
         end
     end
@@ -35,8 +35,7 @@ local function start(gameObject)
     startChildren(gameObject)
 
     for _, component in pairs(gameObject.components) do
-        local afterStart = component.afterStart
-        if afterStart then
+        if component.afterStart then
             component:afterStart()
         end
     end
@@ -44,8 +43,7 @@ end
 
 local function stop(gameObject)
     for _, component in pairs(gameObject.components) do
-        local beforeStop = component.beforeStop
-        if beforeStop then
+        if component.beforeStop then
             component:beforeStop()
         end
     end
@@ -54,24 +52,37 @@ local function stop(gameObject)
     gameObject.started = false
 
     for _, component in pairs(gameObject.components) do
-        local afterStop = component.afterStop
-        if afterStop then
+        if component.afterStop then
             component:afterStop()
         end
     end
 end
 
 
-local function unparent(gameObject)
+local function compose(gameObject, componentName, component)
+    gameObject.components[componentName] = component
+    component.gameObject = gameObject
+end
+
+
+local function removeParent(gameObject)
     local currentParent = gameObject.parent
     if currentParent then
         local siblings = currentParent.children
         table.remove(siblings, Util.findIndexLinear(siblings, gameObject))
+
+        gameObject.parent = nil
+    end
+
+    for _, component in pairs(gameObject.components) do
+        if component.removeParent then
+            component:removeParent()
+        end
     end
 end
 
 local function changeParent(gameObject, newParent, index)
-    gameObject:unparent()
+    gameObject:removeParent()
 
     gameObject.parent = newParent
 
@@ -87,12 +98,48 @@ local function changeParent(gameObject, newParent, index)
     end
 end
 
-local function compose(gameObject, componentName, component)
-    gameObject.components[componentName] = component
-    component.gameObject = gameObject
 
-    if gameObject.started then
-        component:start()
+local function load(gameObject)
+    local onLoad = gameObject.onLoad
+    if onLoad then
+        onLoad(gameObject)
+    end
+
+    for _, child in ipairs(gameObject.children) do
+        child:load()
+    end
+end
+
+local function update(gameObject, dt)
+    local onUpdate = gameObject.onUpdate
+    if onUpdate then
+        onUpdate(gameObject, dt)
+    end
+
+    for _, child in ipairs(gameObject.children) do
+        if child.started then
+            child:update(dt)
+        end
+    end
+end
+
+local function draw(gameObject, parentTransform)
+    local transform = gameObject.transform
+    local composedTransform = Transform.new()
+
+    composedTransform.x = parentTransform.x + transform.x
+    composedTransform.y = parentTransform.y + transform.y
+    composedTransform.rotation = parentTransform.rotation + transform.rotation
+    composedTransform.xScale = parentTransform.xScale * transform.xScale
+    composedTransform.yScale = parentTransform.yScale * transform.yScale
+
+    local onDraw = gameObject.onDraw
+    if onDraw then
+        onDraw(gameObject, composedTransform)
+    end
+
+    for _, child in ipairs(gameObject.children) do
+        child:draw(composedTransform)
     end
 end
 
@@ -102,20 +149,29 @@ end
 
 local gameObjectMt = {
     start = start,
-    stop  = stop,
-    unparent = unparent,
-    changeParent = changeParent,
+    stop = stop,
+
     compose = compose,
+
+    removeParent = removeParent,
+    changeParent = changeParent,
+
+    load = load,
+    update = update,
+    draw = draw,
 }
-gameObjectMt.mt = gameObjectMt
 gameObjectMt.__index = gameObjectMt
 
-local function new()
+local function new(params)
     return setmetatable({
         parent = nil,
         children = {},
         components = {},
         started = false,
+        onLoad = params.onLoad,
+        onUpdate = params.onUpdate,
+        onDraw = params.onDraw,
+        transform = Transform.new(),
     }, gameObjectMt)
 end
 

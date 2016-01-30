@@ -3,16 +3,19 @@
 
 local Messages = require("Messages")
 local GameObject = require("GameObject")
+local Transform = require("Transform")
 
 local Responder = require("Components.Responder")
-local Transform = require("Components.Transform")
 
 
 
--- Game
+-- Init
 
-local function main()
+local GameScene = require("Game.GameScene")
 
+local function bootstrap()
+    local gameScene = GameScene.new()
+    gameScene:changeParent(GameObject.root)
 end
 
 
@@ -20,36 +23,46 @@ end
 -- Love callbacks
 
 function love.load(...)
-    main()
-    GameObject.root:load(...)
+    bootstrap()
+    return GameObject.root:load(...)
 end
 
 function love.update(...)
-    GameObject.root:update(...)
+    return GameObject.root:update(...)
 end
 
 function love.draw(...)
-    GameObject.root:draw(...)
+    local width, height = love.graphics.getDimensions()
+
+    local baseTransform = Transform.new()
+    baseTransform.x = width/2
+    baseTransform.y = height/2
+
+    return GameObject.root:draw(baseTransform, ...)
 end
 
-function love.mousepressed(...)
-    Messages.send("love.mousepressed", ...)
-end
+-- function love.mousepressed(...)
+--     return Messages.send("love.mousepressed", ...)
+-- end
 
-function love.mousereleased(...)
-    Messages.send("love.mousereleased", ...)
-end
+-- function love.mousereleased(...)
+--     return Messages.send("love.mousereleased", ...)
+-- end
 
-function love.keypressed(...)
-    Messages.send("love.keypressed", ...)
-end
+-- function love.keypressed(...)
+--     return Messages.send("love.keypressed", ...)
+-- end
 
-function love.keyreleased(...)
-    Messages.send("love.keyreleased", ...)
+function love.keyreleased(key, ...)
+    if key == "escape" then
+        love.event.quit()
+    else
+        return Messages.send("love.keyreleased", key, ...)
+    end
 end
 
 function love.focus(...)
-    Messages.send("love.focus", ...)
+    return Messages.send("love.focus", ...)
 end
 
 function love.quit(...)
