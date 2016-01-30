@@ -23,7 +23,7 @@ end
 
 local function insertQuestionBalloon(conversationScene, textLines)
     local questionBalloon = QuestionBalloon.new(textLines)
-    questionBalloon:changeParent(conversationScene.mask)
+    questionBalloon:changeParent(conversationScene.maskedGroup)
     table.insert(conversationScene.balloons, 1, { is = "question", balloon = questionBalloon })
 
     cleanBalloons(conversationScene)
@@ -33,7 +33,7 @@ end
 
 local function insertAnswerBalloon(conversationScene, textLines)
     local answerBalloon = AnswerBalloon.new(textLines)
-    answerBalloon:changeParent(conversationScene.mask)
+    answerBalloon:changeParent(conversationScene.maskedGroup)
     table.insert(conversationScene.balloons, 1, { is = "answer", balloon = answerBalloon })
 
     cleanBalloons(conversationScene)
@@ -78,8 +78,10 @@ local function runAction(conversationScene, index)
 
     if index == conversationScene.notIndex then
         insertQuestionBalloon(conversationScene, badReplyTexts[index])
+        return false
     else
         insertQuestionBalloon(conversationScene, okReplyTexts[index])
+        return true
     end
 end
 
@@ -88,8 +90,8 @@ local function onLoad(conversationScene)
     local sceneFrame = SceneFrame.new()
     sceneFrame:changeParent(conversationScene)
 
-    local mask = GameObject.new({
-        onDraw = function(mask, transform)
+    local maskedGroup = GameObject.new({
+        onDraw = function(maskedGroup, transform)
             local width, height = love.graphics.getDimensions()
 
             local function maskStencil()
@@ -99,12 +101,12 @@ local function onLoad(conversationScene)
 
             love.graphics.setStencilTest("greater", 0)
         end,
-        afterDraw = function(mask, transform)
+        afterDraw = function(maskedGroup, transform)
             love.graphics.setStencilTest()
         end,
     })
-    mask:changeParent(conversationScene)
-    conversationScene.mask = mask
+    maskedGroup:changeParent(conversationScene)
+    conversationScene.maskedGroup = maskedGroup
 
     conversationScene.balloonYAnimationOffset = 0
 end

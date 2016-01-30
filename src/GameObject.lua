@@ -146,8 +146,8 @@ local function draw(gameObject, parentTransform)
     local transform = gameObject.transform
     local composedTransform = Transform.new()
 
-    composedTransform.x = parentTransform.x + transform.x
-    composedTransform.y = parentTransform.y + transform.y
+    composedTransform.x = parentTransform.x + parentTransform.xScale*transform.x
+    composedTransform.y = parentTransform.y + parentTransform.yScale*transform.y
     composedTransform.rotation = parentTransform.rotation + transform.rotation
     composedTransform.xScale = parentTransform.xScale * transform.xScale
     composedTransform.yScale = parentTransform.yScale * transform.yScale

@@ -12,6 +12,10 @@ local Transform = require("Transform")
 _G.font = love.graphics.newFont(12)
 love.graphics.setFont(_G.font)
 
+love.graphics.setLineWidth(2)
+love.graphics.setLineStyle("rough")
+
+
 local GameScene = require("Game.GameScene")
 
 local function bootstrap()

@@ -9,8 +9,16 @@ local ActionDisplay = require("Game.ActionDisplay")
 local Timer = require("Game.Timer")
 
 
-local function afterRunAction(actionController)
-    if actionController.lost then
+local function afterRunAction(actionController, results)
+    local lost = false
+    for _, won in ipairs(results) do
+        if not won then
+            lost = true
+            break
+        end
+    end
+
+    if lost then
         Messages.send("gameLose", actions, actionIndex)
     else
         actionController.actionIndex = actionController.actionIndex + 1
@@ -38,23 +46,19 @@ end
 
 local function runAction(actionController, action, actionIndex)
     actionController.actionTaken = true
-
-    -- if action ~= actionController.actions[actionIndex] then
-    --     actionController.lost = true
-    -- end
 end
 
 local function listenKeyReleased(actionController, key, scancode)
     if actionController.timeRemaining > 0 and not actionController.actionTaken then
         if scancode == "z" then
-            Messages.send("runAction", 1, actionController.actionIndex)
-            afterRunAction(actionController)
+            local results = Messages.send("runAction", 1, actionController.actionIndex)
+            afterRunAction(actionController, results)
         elseif scancode == "x" then
-            Messages.send("runAction", 2, actionController.actionIndex)
-            afterRunAction(actionController)
+            local results = Messages.send("runAction", 2, actionController.actionIndex)
+            afterRunAction(actionController, results)
         elseif scancode == "c" then
-            Messages.send("runAction", 3, actionController.actionIndex)
-            afterRunAction(actionController)
+            local results = Messages.send("runAction", 3, actionController.actionIndex)
+            afterRunAction(actionController, results)
         end
     end
 end
