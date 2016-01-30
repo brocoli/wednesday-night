@@ -16,32 +16,34 @@ local function prepareAction(carScene, index)
 end
 
 local function runAction(carScene, index)
-    if index == carScene.notIndex then
-        local background = carScene.background
-        background:stop()
-        background:removeParent()
-        carScene.background = nil
+    if not carScene.lost then
+        if index == carScene.notIndex then
+            local background = carScene.background
+            background:stop()
+            background:removeParent()
+            carScene.background = nil
 
-        local enemy = carScene.enemy
-        enemy:stop()
-        enemy:removeParent()
-        carScene.enemy = nil
+            local enemy = carScene.enemy
+            enemy:stop()
+            enemy:removeParent()
+            carScene.enemy = nil
 
-        local car = carScene.car
-        car:stop()
-        car:removeParent()
-        carScene.car = nil
+            local car = carScene.car
+            car:stop()
+            car:removeParent()
+            carScene.car = nil
 
-        local floor = carScene.floor
-        floor:stop()
-        floor:removeParent()
-        carScene.floor = nil
+            local floor = carScene.floor
+            floor:stop()
+            floor:removeParent()
+            carScene.floor = nil
 
-        carScene.lost = true
-        return false
-    else
-        -- FIXME : own car animation
-        return true
+            carScene.lost = true
+            return false
+        else
+            -- FIXME : own car animation
+            return true
+        end
     end
 end
 
@@ -95,7 +97,7 @@ local function onUpdate(carScene, dt)
     carScene.position = carScene.position + carScene.velocity*dt
 
     local notIndex = carScene.notIndex
-    if notIndex == 1 then -- can't accelerate
+    if notIndex == 3 then -- can't accelerate
         if carScene.enemyX < -1 then
             carScene.enemyX = ((math.max(-2.4, carScene.enemyX - dt*0.5) + 1.5)%3 - 1.5)
         elseif carScene.enemyX < 1.1 then
@@ -103,7 +105,7 @@ local function onUpdate(carScene, dt)
         else
             carScene.enemyX = math.max(1.1, carScene.enemyX - dt*0.5)
         end
-    elseif notIndex == 2 then --- can't brake
+    elseif notIndex == 1 then --- can't brake
         if carScene.enemyX > 1 then
             carScene.enemyX = ((math.min(2.4, carScene.enemyX + dt*0.5) + 1.5)%3 - 1.5)
         elseif carScene.enemyX > -1.1 then
@@ -111,7 +113,7 @@ local function onUpdate(carScene, dt)
         else
             carScene.enemyX = math.min(-1.1, carScene.enemyX + dt*0.5)
         end
-    elseif notIndex == 3 then -- can't switch lanes
+    elseif notIndex == 2 then -- can't switch lanes
         if carScene.enemyX > 0.5 then
             carScene.enemyX = math.max(0.5, carScene.enemyX - dt*0.5)
         else
@@ -122,7 +124,7 @@ end
 
 local function onDraw(carScene, transform)
     if carScene.lost then
-        love.graphics.print("Wasted.", transform.x - 10, transform.y)
+        love.graphics.print("Wasted.", transform.x - 20, transform.y)
     else
         local width, height = love.graphics.getDimensions()
 

@@ -42,6 +42,7 @@ end
 
 
 local function send(message, ...)
+    print("MESSAGE", message)
     local ret = {}
 
     local entries = registry[message]

@@ -5,14 +5,11 @@ local Task = require("Task")
 
 local Responder = require("Components.Responder")
 
-local ActionDisplay = require("Game.ActionDisplay")
-local Timer = require("Game.Timer")
-
 
 local function afterRunAction(actionController, results)
     local lost = false
-    for _, won in ipairs(results) do
-        if not won then
+    for minigame, minigameResult in pairs(results) do
+        if minigameResult[1] == false then
             lost = true
             break
         end
@@ -72,33 +69,16 @@ local function onLoad(actionController)
     end
 
     actionController.actionIndex = 1
-    actionController.timeRemaining = 0
+    actionController.timeRemaining = 1
     actionController.actionTaken = true
-
-
-    local actionDisplay = ActionDisplay.new(actionController.amountActions)
-    actionDisplay:changeParent(actionController)
-    actionController.actionDisplay = actionDisplay
-
-    local timer = Timer.new()
-    timer:changeParent(actionController)
-    actionController.timer = timer
 end
 
 local function onUpdate(actionController, dt)
     actionController.timeRemaining = math.max(0, actionController.timeRemaining - dt*actionController.clockSpeed)
-    actionController.timer.timeRemaining = actionController.timeRemaining
 
     if actionController.timeRemaining == 0 then
-        Messages.send("timesUp")
+        Messages.send("gameLose")
     end
-end
-
-local function onDraw(actionController, transform)
-    local width, height = love.graphics.getDimensions()
-
-    actionController.actionDisplay.transform.x = -width/4
-    actionController.actionDisplay.transform.y = height/4
 end
 
 

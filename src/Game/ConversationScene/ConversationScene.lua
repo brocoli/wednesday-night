@@ -74,14 +74,17 @@ local function prepareAction(conversationScene, index)
 end
 
 local function runAction(conversationScene, index)
-    insertAnswerBalloon(conversationScene, answerTexts[index])
+    if not conversationScene.lost then
+        insertAnswerBalloon(conversationScene, answerTexts[index])
 
-    if index == conversationScene.notIndex then
-        insertQuestionBalloon(conversationScene, badReplyTexts[index])
-        return false
-    else
-        insertQuestionBalloon(conversationScene, okReplyTexts[index])
-        return true
+        if index == conversationScene.notIndex then
+            insertQuestionBalloon(conversationScene, badReplyTexts[index])
+            conversationScene.lost = true
+            return false
+        else
+            insertQuestionBalloon(conversationScene, okReplyTexts[index])
+            return true
+        end
     end
 end
 

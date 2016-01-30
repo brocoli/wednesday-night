@@ -4,6 +4,7 @@ local GameObject = require("GameObject")
 local Responder = require("Components.Responder")
 
 local SceneFrame = require("Game.SceneFrame")
+local Timer = require("Game.Timer")
 
 
 
@@ -23,13 +24,22 @@ local function onLoad(actionDisplay)
     local sceneFrame = SceneFrame.new()
     sceneFrame:changeParent(actionDisplay)
 
+    local timer = Timer.new()
+    timer:changeParent(actionDisplay)
+    actionDisplay.timer = timer
+
     actionDisplay.font = love.graphics.newFont(30)
 end
 
 local function onDraw(actionDisplay, transform)
     local width, height = love.graphics.getDimensions()
 
-    local amountActions = actionDisplay.amountActions
+    actionDisplay.timer.transform.x = width/4
+    actionDisplay.timer.transform.y = -height/4
+
+    actionDisplay.timer.timeRemaining = actionDisplay.actionController.timeRemaining
+
+    local amountActions = actionDisplay.actionController.amountActions
     local left = -width/4 + 4
     local right = width/4 - 4
     local objWidth = (right - left) / (amountActions + 1)
@@ -53,17 +63,18 @@ local function onDraw(actionDisplay, transform)
 end
 
 
-local function new(amountActions)
+local function new(actionController)
     local actionDisplay = GameObject.new({
         onLoad = onLoad,
         onDraw = onDraw,
     })
 
-    actionDisplay.amountActions = amountActions
+    actionDisplay.actionController = actionController
     actionDisplay.completeActions = {}
 
     actionDisplay:compose("responder", Responder.new({
         runAction = runAction,
+
     }))
 
     return actionDisplay
