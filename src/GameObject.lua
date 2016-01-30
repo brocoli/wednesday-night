@@ -141,6 +141,11 @@ local function draw(gameObject, parentTransform)
     for _, child in ipairs(gameObject.children) do
         child:draw(composedTransform)
     end
+
+    local afterDraw = gameObject.afterDraw
+    if afterDraw then
+        afterDraw(gameObject, composedTransform)
+    end
 end
 
 
@@ -171,6 +176,7 @@ local function new(params)
         onLoad = params.onLoad,
         onUpdate = params.onUpdate,
         onDraw = params.onDraw,
+        afterDraw = params.afterDraw,
         transform = Transform.new(),
     }, gameObjectMt)
 end

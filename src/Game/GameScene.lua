@@ -9,7 +9,7 @@ local Timer = require("Game.Timer")
 local function onLoad(gameScene)
     local conversationScene = ConversationScene.new()
     conversationScene:changeParent(GameObject.root)
-    gameScene.topLeftScene = conversationScene
+    gameScene.bottomLeftScene = conversationScene
 
     local timer = Timer.new()
     timer.transform.x = 0
@@ -20,8 +20,8 @@ end
 local function onDraw(gameScene)
     local width, height = love.graphics.getDimensions()
 
-    gameScene.topLeftScene.transform.x = -width/4
-    gameScene.topLeftScene.transform.y = -height/4
+    gameScene.bottomLeftScene.transform.x = -width/4
+    gameScene.bottomLeftScene.transform.y = height/4
 end
 
 

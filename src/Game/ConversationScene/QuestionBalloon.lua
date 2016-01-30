@@ -43,7 +43,7 @@ local function onDraw(questionBalloon, transform)
 
     local y = transform.y - (amountLines + 0.5)*lineSpacing
     for i, line in ipairs(textLines) do
-        love.graphics.print(line, transform.x - refWidth + lineSpacing/2, y, transform.rotation, transform.xScale, transform.yScale)
+        love.graphics.print(line, transform.x + lineSpacing/2, y, transform.rotation, transform.xScale, transform.yScale)
         y = y + lineSpacing
     end
 end

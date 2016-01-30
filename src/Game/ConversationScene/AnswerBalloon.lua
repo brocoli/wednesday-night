@@ -9,9 +9,9 @@ local function onLoad(answerBalloon)
     local borderHeight = (#answerBalloon.textLines + 1) * lineSpacing
     answerBalloon.height = borderHeight
 
-    local left = 0
+    local left = -refWidth
     local top = -borderHeight
-    local right = refWidth
+    local right = 0
     local down = 0
 
     answerBalloon.borderMesh = love.graphics.newMesh({
@@ -21,14 +21,14 @@ local function onLoad(answerBalloon)
         { right, top,            0, 0,  255, 255, 255, 255 },
         { right-2, top+2,        0, 0,  255, 255, 255, 255 },
 
-        { right, down,           0, 0,  255, 255, 255, 255 },
-        { right-2, down-2,       0, 0,  255, 255, 255, 255 },
+        { right, down - 10,      0, 0,  255, 255, 255, 255 },
+        { right-2, down-2 - 6,   0, 0,  255, 255, 255, 255 },
 
-        { left - 15, down,       0, 0,  255, 255, 255, 255 },
-        { left+7 - 15, down-2,   0, 0,  255, 255, 255, 255 },
+        { right + 15, down,       0, 0,  255, 255, 255, 255 },
+        { right-7 + 15, down-2,   0, 0,  255, 255, 255, 255 },
 
-        { left, down - 10,       0, 0,  255, 255, 255, 255 },
-        { left+2, down-2 - 6,    0, 0,  255, 255, 255, 255 },
+        { left, down,           0, 0,  255, 255, 255, 255 },
+        { left+2, down-2,       0, 0,  255, 255, 255, 255 },
 
         { left, top,             0, 0,  255, 255, 255, 255 },
         { left+2, top+2,         0, 0,  255, 255, 255, 255 },
