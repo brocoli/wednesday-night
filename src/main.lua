@@ -9,6 +9,9 @@ local Transform = require("Transform")
 
 -- Init
 
+_G.font = love.graphics.newFont(12)
+love.graphics.setFont(_G.font)
+
 local GameScene = require("Game.GameScene")
 
 local function bootstrap()

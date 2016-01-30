@@ -13,7 +13,6 @@ local AnswerBalloon = require("Game.ConversationScene.AnswerBalloon")
 local function cleanBalloons(conversationScene)
     if #conversationScene.balloons >= 8 and conversationScene.balloonYAnimationOffset == 0 then
         for i = #conversationScene.balloons, 8, -1 do
-            print("removeBalloon", i)
             local deadBalloon = conversationScene.balloons[i].balloon
             deadBalloon:stop()
             deadBalloon:removeParent()
