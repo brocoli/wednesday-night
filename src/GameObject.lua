@@ -6,22 +6,6 @@ local Transform = require("Transform")
 
 
 
--- Private methods
-
-local function startChildren(gameObject)
-    for _, child in ipairs(gameObject.children) do
-        child:start()
-    end
-end
-
-local function stopChildren(gameObject)
-    for _, child in ipairs(gameObject.children) do
-        child:stop()
-    end
-end
-
-
-
 -- Methods
 
 local function start(gameObject)
@@ -32,7 +16,9 @@ local function start(gameObject)
     end
 
     gameObject.started = true
-    startChildren(gameObject)
+    for _, child in ipairs(gameObject.children) do
+        child:start()
+    end
 
     for _, component in pairs(gameObject.components) do
         if component.afterStart then
@@ -48,7 +34,10 @@ local function stop(gameObject)
         end
     end
 
-    stopChildren(gameObject)
+
+    for _, child in ipairs(gameObject.children) do
+        child:stop()
+    end
     gameObject.started = false
 
     for _, component in pairs(gameObject.components) do
@@ -93,6 +82,10 @@ local function changeParent(gameObject, newParent, index)
         table.insert(siblings, gameObject)
     end
 
+    if newParent.loaded and not gameObject.loaded then
+        gameObject:load()
+    end
+
     if newParent.started and not gameObject.started then
         gameObject:start()
     end
@@ -108,6 +101,12 @@ local function load(gameObject)
     for _, child in ipairs(gameObject.children) do
         child:load()
     end
+    gameObject.loaded = true
+
+    local afterLoad = gameObject.afterLoad
+    if afterLoad then
+        afterLoad(gameObject)
+    end
 end
 
 local function update(gameObject, dt)
@@ -120,6 +119,11 @@ local function update(gameObject, dt)
         if child.started then
             child:update(dt)
         end
+    end
+
+    local afterUpdate = gameObject.afterUpdate
+    if afterUpdate then
+        afterUpdate(gameObject, dt)
     end
 end
 
@@ -174,15 +178,18 @@ local function new(params)
         components = {},
         started = false,
         onLoad = params.onLoad,
+        afterLoad = params.afterLoad,
         onUpdate = params.onUpdate,
+        afterUpdate = params.afterUpdate,
         onDraw = params.onDraw,
         afterDraw = params.afterDraw,
         transform = Transform.new(),
     }, gameObjectMt)
 end
 
-local root = new({})
-root:start()
+local root = new({
+    onLoad = start,
+})
 
 
 local GameObject = {}

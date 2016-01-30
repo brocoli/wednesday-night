@@ -1,21 +1,8 @@
 
 local GameObject = require("GameObject")
-local Messages = require("Messages")
 
 
 
-local function onLoad(timer)
-    timer.timeRemaining = 1
-end
-
-local function onUpdate(timer, dt)
-    timer.timeRemaining = math.max(0, timer.timeRemaining - dt/2)
-    if timer.timeRemaining == 0 then
-        Messages.send("timesUp")
-        timer:stop() --TODO: move to GameScene
-        timer:removeParent() --TODO: move to GameScene
-    end
-end
 
 local function onDraw(timer, transform)
     love.graphics.circle( "fill", transform.x, transform.y, 24, 50 )
@@ -28,8 +15,6 @@ end
 
 local function new()
     return GameObject.new({
-        onLoad = onLoad,
-        onUpdate = onUpdate,
         onDraw = onDraw,
     })
 end

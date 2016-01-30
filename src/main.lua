@@ -5,8 +5,6 @@ local Messages = require("Messages")
 local GameObject = require("GameObject")
 local Transform = require("Transform")
 
-local Responder = require("Components.Responder")
-
 
 
 -- Init

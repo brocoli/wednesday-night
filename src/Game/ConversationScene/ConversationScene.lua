@@ -1,6 +1,8 @@
 
 local GameObject = require("GameObject")
 
+local Responder = require("Components.Responder")
+
 local SceneFrame = require("Game.SceneFrame")
 
 local QuestionBalloon = require("Game.ConversationScene.QuestionBalloon")
@@ -8,7 +10,67 @@ local AnswerBalloon = require("Game.ConversationScene.AnswerBalloon")
 
 
 
+local function insertQuestionBalloon(conversationScene, textLines)
+    local questionBalloon = QuestionBalloon.new(textLines)
+    questionBalloon:changeParent(conversationScene.mask)
+    table.insert(conversationScene.balloons, 1, { is = "question", balloon = questionBalloon })
+
+    conversationScene.balloonYAnimationOffset = conversationScene.balloonYAnimationOffset + questionBalloon.height + 12
+end
+
+local function insertAnswerBalloon(conversationScene, textLines)
+    local answerBalloon = AnswerBalloon.new(textLines)
+    answerBalloon:changeParent(conversationScene.mask)
+    table.insert(conversationScene.balloons, 1, { is = "answer", balloon = answerBalloon })
+
+    conversationScene.balloonYAnimationOffset = conversationScene.balloonYAnimationOffset + answerBalloon.height + 12
+end
+
+
+local questionTexts = {
+    [1] = {"Not Action 1 text", "sample"},
+    [2] = {"Not Action 2 text", "sample"},
+    [3] = {"Not Action 3 text", "sample"},
+}
+
+local answerTexts = {
+    [1] = {"Action 1 text", "sample"},
+    [2] = {"Action 2 text", "sample"},
+    [3] = {"Action 3 text", "sample"},
+}
+
+local okReplyTexts = {
+    [1] = {"OK Reply 1 text", "sample"},
+    [2] = {"OK Reply 2 text", "sample"},
+    [3] = {"OK Reply 3 text", "sample"},
+}
+
+local badReplyTexts = {
+    [1] = {"Bad Reply 1 text", "sample"},
+    [2] = {"Bad Reply 2 text", "sample"},
+    [3] = {"Bad Reply 3 text", "sample"},
+}
+
+local function prepareAction(conversationScene, notIndex)
+    insertQuestionBalloon(conversationScene, questionTexts[notIndex])
+
+    conversationScene.notIndex = notIndex
+end
+
+local function runAction(conversationScene, index)
+    insertAnswerBalloon(conversationScene, answerTexts[index])
+
+    print(index, conversationScene.notIndex)
+    if index == conversationScene.notIndex then
+        insertQuestionBalloon(conversationScene, badReplyTexts[index])
+    else
+        insertQuestionBalloon(conversationScene, okReplyTexts[index])
+    end
+end
+
+
 local function onLoad(conversationScene)
+    print("onLoad conversationScene")
     local sceneFrame = SceneFrame.new()
     sceneFrame:changeParent(conversationScene)
     conversationScene.sceneFrame = sceneFrame
@@ -29,90 +91,36 @@ local function onLoad(conversationScene)
         end,
     })
     mask:changeParent(conversationScene)
+    conversationScene.mask = mask
 
-    local questionBalloon = QuestionBalloon.new({ "Hi!", "I'm a text! haha", "Horray!", })
-    questionBalloon:changeParent(mask)
-    table.insert(conversationScene.questionBalloons, questionBalloon)
-
-    local questionBalloon = AnswerBalloon.new({ "Hi!", "I'm a text! haha", "Horray!", })
-    questionBalloon:changeParent(mask)
-    table.insert(conversationScene.answerBalloons, questionBalloon)
-
-    local questionBalloon = QuestionBalloon.new({ "Hi!", "I'm a text! haha", "Horray!", })
-    questionBalloon:changeParent(mask)
-    table.insert(conversationScene.questionBalloons, questionBalloon)
-
-    local questionBalloon = AnswerBalloon.new({ "Hi!", "I'm a text! haha", "Horray!", })
-    questionBalloon:changeParent(mask)
-    table.insert(conversationScene.answerBalloons, questionBalloon)
-
-    local questionBalloon = QuestionBalloon.new({ "Hi!", "I'm a text! haha", "Horray!", })
-    questionBalloon:changeParent(mask)
-    table.insert(conversationScene.questionBalloons, questionBalloon)
-
-    local questionBalloon = AnswerBalloon.new({ "Hi!", "I'm a text! haha", "Horray!", })
-    questionBalloon:changeParent(mask)
-    table.insert(conversationScene.answerBalloons, questionBalloon)
-
-    local questionBalloon = QuestionBalloon.new({ "Hi!", "I'm a text! haha", "Horray!", })
-    questionBalloon:changeParent(mask)
-    table.insert(conversationScene.questionBalloons, questionBalloon)
-
-    local questionBalloon = AnswerBalloon.new({ "Hi!", "I'm a text! haha", "Horray!", })
-    questionBalloon:changeParent(mask)
-    table.insert(conversationScene.answerBalloons, questionBalloon)
+    conversationScene.balloonYAnimationOffset = 0
 end
 
 local function onUpdate(conversationScene, dt)
+    conversationScene.balloonYAnimationOffset = math.max(0, conversationScene.balloonYAnimationOffset - dt*200)
 end
 
 local function onDraw(conversationScene, transform)
     local width, height = love.graphics.getDimensions()
 
-    local questionBalloons = conversationScene.questionBalloons
-    local answerBalloons = conversationScene.answerBalloons
+    local balloons = conversationScene.balloons
 
     local questionBalloonX = -width/4 + 25
     local answerBalloonX = width/4 - 25
 
-    local y = height/4 - 12
+    local y = height/4 - 12 + conversationScene.balloonYAnimationOffset
 
-    local i = 1
-    while i <= #questionBalloons and i <= #answerBalloons do
-        local questionBalloon = questionBalloons[i]
-        local answerBalloon = answerBalloons[i]
+    for i, balloonData in ipairs(balloons) do
+        local balloon = balloonData.balloon
 
-        questionBalloon.transform.x = questionBalloonX
-        questionBalloon.transform.y = y
+        if balloonData.is == "question" then
+            balloon.transform.x = questionBalloonX
+        elseif balloonData.is == "answer" then
+            balloon.transform.x = answerBalloonX
+        end
 
-        y = y - questionBalloon.height - 12
-
-        answerBalloon.transform.x = answerBalloonX
-        answerBalloon.transform.y = y
-
-        y = y - answerBalloon.height - 12
-
-        i = i+1
-    end
-    while i <= #questionBalloons do
-        local questionBalloon = questionBalloons[i]
-
-        questionBalloon.transform.x = questionBalloonX
-        questionBalloon.transform.y = y
-
-        y = y - questionBalloon.height - 12
-
-        i = i+1
-    end
-    while i <= #answerBalloons do
-        local answerBalloon = answerBalloons[i]
-
-        answerBalloon.transform.x = answerBalloonX
-        answerBalloon.transform.y = y
-
-        y = y - answerBalloon.height - 12
-
-        i = i+1
+        balloon.transform.y = y
+        y = y - balloon.height - 12
     end
 end
 
@@ -120,11 +128,16 @@ end
 local function new()
     local conversationScene = GameObject.new({
         onLoad = onLoad,
+        onUpdate = onUpdate,
         onDraw = onDraw,
     })
 
-    conversationScene.questionBalloons = {}
-    conversationScene.answerBalloons = {}
+    conversationScene.balloons = {}
+
+    conversationScene:compose("responder", Responder.new({
+        prepareAction = prepareAction,
+        runAction = runAction,
+    }))
 
     return conversationScene
 end
