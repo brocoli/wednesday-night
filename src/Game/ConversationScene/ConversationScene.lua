@@ -10,10 +10,24 @@ local AnswerBalloon = require("Game.ConversationScene.AnswerBalloon")
 
 
 
+local function cleanBalloons(conversationScene)
+    if #conversationScene.balloons >= 8 and conversationScene.balloonYAnimationOffset == 0 then
+        for i = #conversationScene.balloons, 8, -1 do
+            print("removeBalloon", i)
+            local deadBalloon = conversationScene.balloons[i].balloon
+            deadBalloon:stop()
+            deadBalloon:removeParent()
+            table.remove(conversationScene.balloons, i)
+        end
+    end
+end
+
 local function insertQuestionBalloon(conversationScene, textLines)
     local questionBalloon = QuestionBalloon.new(textLines)
     questionBalloon:changeParent(conversationScene.mask)
     table.insert(conversationScene.balloons, 1, { is = "question", balloon = questionBalloon })
+
+    cleanBalloons(conversationScene)
 
     conversationScene.balloonYAnimationOffset = conversationScene.balloonYAnimationOffset + questionBalloon.height + 12
 end
@@ -22,6 +36,8 @@ local function insertAnswerBalloon(conversationScene, textLines)
     local answerBalloon = AnswerBalloon.new(textLines)
     answerBalloon:changeParent(conversationScene.mask)
     table.insert(conversationScene.balloons, 1, { is = "answer", balloon = answerBalloon })
+
+    cleanBalloons(conversationScene)
 
     conversationScene.balloonYAnimationOffset = conversationScene.balloonYAnimationOffset + answerBalloon.height + 12
 end
@@ -72,7 +88,6 @@ end
 local function onLoad(conversationScene)
     local sceneFrame = SceneFrame.new()
     sceneFrame:changeParent(conversationScene)
-    conversationScene.sceneFrame = sceneFrame
 
     local mask = GameObject.new({
         onDraw = function(mask, transform)
