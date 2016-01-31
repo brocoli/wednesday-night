@@ -188,7 +188,35 @@ end
 
 local function onDraw(carScene, transform)
     if carScene.lost then
-        love.graphics.print("Wasted.", transform.x - 20, transform.y)
+        love.graphics.line(
+            transform.x + transform.xScale*( -90), transform.y + transform.yScale*(  70),
+            transform.x + transform.xScale*( -75), transform.y + transform.yScale*(  25),
+            transform.x + transform.xScale*(-110), transform.y + transform.yScale*(  10),
+            transform.x + transform.xScale*( -70), transform.y + transform.yScale*( -10),
+            transform.x + transform.xScale*( -75), transform.y + transform.yScale*( -50),
+            transform.x + transform.xScale*( -35), transform.y + transform.yScale*( -30),
+            transform.x + transform.xScale*( -25), transform.y + transform.yScale*( -80),
+            transform.x + transform.xScale*(  20), transform.y + transform.yScale*( -60),
+            transform.x + transform.xScale*(  40), transform.y + transform.yScale*(-100),
+            transform.x + transform.xScale*(  55), transform.y + transform.yScale*( -65),
+
+            transform.x + transform.xScale*(  90), transform.y + transform.yScale*( -70),
+            transform.x + transform.xScale*(  75), transform.y + transform.yScale*( -25),
+            transform.x + transform.xScale*( 110), transform.y + transform.yScale*( -10),
+            transform.x + transform.xScale*(  70), transform.y + transform.yScale*(  10),
+            transform.x + transform.xScale*(  75), transform.y + transform.yScale*(  50),
+            transform.x + transform.xScale*(  35), transform.y + transform.yScale*(  30),
+            transform.x + transform.xScale*(  25), transform.y + transform.yScale*(  80),
+            transform.x + transform.xScale*( -20), transform.y + transform.yScale*(  60),
+            transform.x + transform.xScale*( -40), transform.y + transform.yScale*( 100),
+            transform.x + transform.xScale*( -55), transform.y + transform.yScale*(  65),
+
+            transform.x + transform.xScale*( -90), transform.y + transform.yScale*(  70)
+        )
+
+        love.graphics.setFont(_G.bigFont)
+        love.graphics.print("CRASH!", transform.x - 55, transform.y + 5, -math.pi*0.15)
+        love.graphics.setFont(_G.font)
     else
         local width, height = love.graphics.getDimensions()
 
