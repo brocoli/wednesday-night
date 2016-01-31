@@ -6,6 +6,9 @@ local Task = require("Task")
 local Responder = require("Components.Responder")
 
 
+
+local alarmSound = love.audio.newSource("assets/alarm.wav")
+
 local function afterRunAction(actionController, action, results)
     local lost = false
     for minigame, minigameResult in pairs(results) do
@@ -80,6 +83,8 @@ local function onUpdate(actionController, dt)
         actionController.timeRemaining = math.max(0, actionController.timeRemaining - dt*_G.clockSpeed)
 
         if actionController.timeRemaining == 0 then
+            alarmSound:rewind()
+            alarmSound:play()
             Messages.send("gameLose")
         end
     end

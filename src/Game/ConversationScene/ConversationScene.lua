@@ -11,6 +11,13 @@ local Instructions = require("Game.ConversationScene.Instructions")
 
 
 
+local talkSources = {
+    love.audio.newSource("assets/talk1.wav"),
+    love.audio.newSource("assets/talk2.wav"),
+    love.audio.newSource("assets/talk3.wav"),
+    love.audio.newSource("assets/talk4.wav"),
+}
+
 local function cleanBalloons(conversationScene)
     if #conversationScene.balloons >= 8 and conversationScene.balloonYAnimationOffset == 0 then
         for i = #conversationScene.balloons, 8, -1 do
@@ -44,6 +51,10 @@ local function insertAnswerBalloon(conversationScene, textLines)
     conversationScene.balloonYAnimationOffset = conversationScene.balloonYAnimationOffset + answerBalloon.height + 12
 
     conversationScene.instructions:changeParent(conversationScene)
+
+    local source = talkSources[love.math.random(1,#talkSources)]
+    source:rewind()
+    source:play()
 end
 
 
@@ -74,7 +85,7 @@ local answerTexts = {
 local replyTexts = {
     [1] = {
         [1] = {"Could you pay attention?", "I'm feeling pretty down."},
-        [2] = {"I'm a lright I guess.", "A little down, but I'll manage."},
+        [2] = {"I'm alright I guess.", "A little down, but I'll manage."},
         [3] = {"Actually, that's a good idea."},
     },
     [2] = {
@@ -94,6 +105,14 @@ local function prepareAction(conversationScene, index)
     insertQuestionBalloon(conversationScene, questionTexts[notIndex])
 
     conversationScene.notIndex = notIndex
+
+    if conversationScene.didNotPlayStartSound then
+        conversationScene.didNotPlayStartSound = false
+
+        local source = talkSources[love.math.random(1,#talkSources)]
+        source:rewind()
+        source:play()
+    end
 end
 
 local function runAction(conversationScene, index)
@@ -138,6 +157,8 @@ local function onLoad(conversationScene)
     local instructions = Instructions.new()
     instructions:changeParent(maskedGroup)
     conversationScene.instructions = instructions
+
+    conversationScene.didNotPlayStartSound = true
 end
 
 local function onUpdate(conversationScene, dt)

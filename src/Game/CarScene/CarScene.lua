@@ -12,6 +12,14 @@ local Instructions = require("Game.CarScene.Instructions")
 
 
 
+local motorSound = love.audio.newSource("assets/motor.wav")
+local motorbgSound = love.audio.newSource("assets/motorbg.ogg")
+local explosionSound = love.audio.newSource("assets/explosion.wav")
+
+motorbgSound:setLooping(true)
+
+
+
 local function prepareAction(carScene, index)
     carScene.notIndex = (index + love.math.random(0,1))%3 + 1
 end
@@ -44,20 +52,37 @@ local function runAction(carScene, index)
             instructions:removeParent()
             carScene.instructions = nil
 
+            explosionSound:rewind()
+            explosionSound:play()
+
+            motorbgSound:stop()
+
             carScene.lost = true
             return false
         elseif index == 1 then
             carScene.carMovementX = -2
             carScene.carMovementShape = 1
             carScene.carMovementSign = -1
+
+            motorSound:rewind()
+            motorSound:play()
+
             return true
         elseif index == 2 then
             --TODO how???
+
+            motorSound:rewind()
+            motorSound:play()
+
             return true
         elseif index == 3 then
             carScene.carMovementX = 2
             carScene.carMovementShape = -1
             carScene.carMovementSign = 1
+
+            motorSound:rewind()
+            motorSound:play()
+
             return true
         end
     end
@@ -86,6 +111,14 @@ local function onLoad(carScene)
     })
     maskedGroup:changeParent(carScene)
     carScene.maskedGroup = maskedGroup
+
+
+    motorbgSound:play()
+    carScene:compose("motorbgSoundStop", {
+        afterStop = function()
+            motorbgSound:stop()
+        end
+    })
 
 
     carScene.position = 0
