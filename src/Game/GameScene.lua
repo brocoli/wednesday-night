@@ -112,7 +112,9 @@ end
 local function gameLose(gameScene, reason)
     gameScene.actionController:stop()
 
-    Task.new(1, 1, function()
+    Task.new(2, 1, function()
+        _G.clockSpeed = 0.2
+
         gameScene.fadeIn = 0
         gameScene.fadeMessage = function(gameScene, transform, fadeAlpha)
             love.graphics.setColor(255,255,255,fadeAlpha*255)
@@ -147,8 +149,8 @@ local function gameWin(gameScene)
                             string.upper(love.keyboard.getKeyFromScancode("x")),
                             string.upper(love.keyboard.getKeyFromScancode("c"))
                         ),
-                        transform.x - 90, transform.y - 8,
-                        180, "center"
+                        transform.x - 300, transform.y - 30,
+                        600, "center"
                     )
                     love.graphics.setFont(_G.font)
                     love.graphics.setColor(255,255,255,255)
@@ -164,8 +166,8 @@ local function gameWin(gameScene)
                 love.graphics.setFont(_G.bigFont)
                 love.graphics.printf(
                     "You won!\nSpeed up!",
-                    transform.x - 45, transform.y - 12,
-                    90, "center"
+                    transform.x - 300, transform.y - 30,
+                    600, "center"
                 )
                 love.graphics.setFont(_G.font)
                 love.graphics.setColor(255,255,255,255)

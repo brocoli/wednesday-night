@@ -8,14 +8,9 @@ local Timer = require("Game.Timer")
 
 
 
-local function runAction(actionDisplay, action, actionIndex)
-    local completeActions = actionDisplay.completeActions
-    if action == 1 then
-        completeActions[actionIndex] = string.upper(love.keyboard.getKeyFromScancode("z"))
-    elseif action == 2 then
-        completeActions[actionIndex] = string.upper(love.keyboard.getKeyFromScancode("x"))
-    elseif action == 3 then
-        completeActions[actionIndex] = string.upper(love.keyboard.getKeyFromScancode("c"))
+local function ranAction(actionDisplay, success)
+    if success then
+        table.insert(actionDisplay.completeActions, true)
     end
 end
 
@@ -29,19 +24,24 @@ local function onLoad(actionDisplay)
         timer:changeParent(actionDisplay)
         actionDisplay.timer = timer
     end
-
-    actionDisplay.font = love.graphics.newFont(30)
 end
 
 local function onDraw(actionDisplay, transform)
     local width, height = love.graphics.getDimensions()
 
-    if actionDisplay.timer then
-        actionDisplay.timer.transform.x = width/4
-        actionDisplay.timer.transform.y = -height/4
+    local timer = actionDisplay.timer
+    if timer then
+        timer.transform.x = width/4
+        timer.transform.y = -height/4
+        timer.transform.xScale = 1.5
+        timer.transform.yScale = 1.5
 
-        actionDisplay.timer.timeRemaining = actionDisplay.actionController.timeRemaining
+        timer.timeRemaining = actionDisplay.actionController.timeRemaining
     end
+
+    love.graphics.rectangle( "fill", transform.x - width/4 + 12, transform.y - height/4 + 12, width/2 - 24, height/2 - 24)
+    love.graphics.setColor(0,0,0,255)
+    love.graphics.rectangle( "fill", transform.x - width/4 + 20, transform.y - 34, width/2 - 40, 68 )
 
     local amountActions = actionDisplay.actionController.amountActions
     local left = -width/4 + 4
@@ -49,21 +49,26 @@ local function onDraw(actionDisplay, transform)
     local objWidth = (right - left) / (amountActions + 1)
 
     local completeActions = actionDisplay.completeActions
-    love.graphics.setFont(actionDisplay.font)
 
-    for i=0, amountActions - 1 do
-        local lObjs = i
-        local rObjs = amountActions - 1 - i
-        local x = (lObjs * objWidth / 2) - (rObjs * objWidth / 2)
-        love.graphics.rectangle( "fill", transform.x + x - 20, transform.y + 20, 40, 4)
+    love.graphics.setFont(_G.bigFont)
+    love.graphics.printf( "Progress", transform.x - 100, transform.y - 80, 200, "center" )
 
-        local completeAction = completeActions[i+1]
-        if completeAction then
-            love.graphics.print( completeAction, transform.x + x - 10, transform.y - 10)
-        end
-    end
-
+    love.graphics.printf( string.format("%d/%d",#completeActions,amountActions), transform.x - 100, transform.y + 50, 200, "center" )
     love.graphics.setFont(_G.font)
+
+    love.graphics.setColor(255,255,255,255)
+    love.graphics.rectangle( "fill", transform.x - width/4 + 24, transform.y - 30, (width/2 - 48)*#completeActions/amountActions, 60 )
+    -- for i=0, amountActions - 1 do
+    --     local lObjs = i
+    --     local rObjs = amountActions - 1 - i
+    --     local x = (lObjs * objWidth / 2) - (rObjs * objWidth / 2)
+    --     love.graphics.rectangle( "fill", transform.x + x - 20, transform.y + 20, 40, 4)
+
+    --     local completeAction = completeActions[i+1]
+    --     if completeAction then
+    --         love.graphics.print( completeAction, transform.x + x - 10, transform.y - 10)
+    --     end
+    -- end
 end
 
 
@@ -77,8 +82,7 @@ local function new(actionController)
     actionDisplay.completeActions = {}
 
     actionDisplay:compose("responder", Responder.new({
-        runAction = runAction,
-
+        ranAction = ranAction,
     }))
 
     return actionDisplay

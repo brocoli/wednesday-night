@@ -6,7 +6,7 @@ local Task = require("Task")
 local Responder = require("Components.Responder")
 
 
-local function afterRunAction(actionController, results)
+local function afterRunAction(actionController, action, results)
     local lost = false
     for minigame, minigameResult in pairs(results) do
         if minigameResult[1] == false then
@@ -14,6 +14,8 @@ local function afterRunAction(actionController, results)
             break
         end
     end
+
+    Messages.send("ranAction", not lost)
 
     if lost then
         Messages.send("gameLose", actions, actionIndex)
@@ -48,14 +50,14 @@ end
 local function listenKeyReleased(actionController, key, scancode)
     if actionController.timeRemaining > 0 and not actionController.actionTaken then
         if scancode == "z" then
-            local results = Messages.send("runAction", 1, actionController.actionIndex)
-            afterRunAction(actionController, results)
+            local results = Messages.send("runAction", 1)
+            afterRunAction(actionController, 1, results)
         elseif scancode == "x" then
-            local results = Messages.send("runAction", 2, actionController.actionIndex)
-            afterRunAction(actionController, results)
+            local results = Messages.send("runAction", 2)
+            afterRunAction(actionController, 2, results)
         elseif scancode == "c" then
-            local results = Messages.send("runAction", 3, actionController.actionIndex)
-            afterRunAction(actionController, results)
+            local results = Messages.send("runAction", 3)
+            afterRunAction(actionController, 3, results)
         end
     end
 end

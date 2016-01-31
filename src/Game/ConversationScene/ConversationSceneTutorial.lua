@@ -16,7 +16,7 @@ local function onDraw(conversationSceneTutorial, transform)
     love.graphics.setFont(_G.bigFont)
     love.graphics.printf(
         string.format(
-            "23:00 - Chat with SO.\n\n%s: be funny.\n%s: be serious.\n%s: dodge the question.\n\nDon't disappoint.",
+            "23:00 - Chat with SO.\n\n%s: be funny.\n%s: be serious.\n%s: dodge the subject.\n\nDon't disappoint.",
             string.upper(love.keyboard.getKeyFromScancode("z")),
             string.upper(love.keyboard.getKeyFromScancode("x")),
             string.upper(love.keyboard.getKeyFromScancode("c"))

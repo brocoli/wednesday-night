@@ -43,27 +43,45 @@ end
 
 
 local questionTexts = {
-    [1] = {"Not Action 1 text", "sample"},
-    [2] = {"Not Action 2 text", "sample"},
-    [3] = {"Not Action 3 text", "sample"},
+    [1] = {"My aunt has passed away", "this afternoon."},
+    [2] = {"I'm bored."},
+    [3] = {"There's something we need", "to talk about..."},
 }
 
 local answerTexts = {
-    [1] = {"Action 1 text", "sample"},
-    [2] = {"Action 2 text", "sample"},
-    [3] = {"Action 3 text", "sample"},
+    [1] = {
+        [1] = {"LOL get rekt!", "D:", "OOPS wrong chat!!"},
+        [2] = {"I'm sorry.", "Are you ok?"},
+        [3] = {"I'm sorry...", "let's go to a pub,", "it'll make you feel better."},
+    },
+    [2] = {
+        [1] = {"http://giphy.com/gifs/", "cat-doodle-RgM33sAlSxzfq"},
+        [2] = {"Me too."},
+        [3] = {"Hey, I'm looking to", "buy this thing...", "could you take a look?"},
+    },
+    [3] = {
+        [1] = {"Sure, but I already told you", "I'm not into THAT,", "you know? :P"},
+        [2] = {"Sure, what's bothering you?"},
+        [3] = {"Sorry, not now.", "I'm sleepy"},
+    },
 }
 
-local okReplyTexts = {
-    [1] = {"OK Reply 1 text", "sample"},
-    [2] = {"OK Reply 2 text", "sample"},
-    [3] = {"OK Reply 3 text", "sample"},
-}
-
-local badReplyTexts = {
-    [1] = {"Bad Reply 1 text", "sample"},
-    [2] = {"Bad Reply 2 text", "sample"},
-    [3] = {"Bad Reply 3 text", "sample"},
+local replyTexts = {
+    [1] = {
+        [1] = {"Could you pay attention?", "I'm feeling pretty down."},
+        [2] = {"I'm a lright I guess.", "A little down, but I'll manage."},
+        [3] = {"Actually, that's a good idea."},
+    },
+    [2] = {
+        [1] = {"heh", "I didn't expect that :P"},
+        [2] = {"..."},
+        [3] = {"Sure", "I don't have anything", "to do right now anyway."},
+    },
+    [3] = {
+        [1] = {"hahahha", "well, I'm pretty sure", "you'd enjoy it ;)", "No, but seriously,"},
+        [2] = {"*sigh* well...", "here it goes:"},
+        [3] = {"No you're not,", "you're just avoiding it.", "Why do I even bother..."},
+    },
 }
 
 local function prepareAction(conversationScene, index)
@@ -75,14 +93,13 @@ end
 
 local function runAction(conversationScene, index)
     if not conversationScene.lost then
-        insertAnswerBalloon(conversationScene, answerTexts[index])
+        insertAnswerBalloon(conversationScene, answerTexts[conversationScene.notIndex][index])
+        insertQuestionBalloon(conversationScene, replyTexts[conversationScene.notIndex][index])
 
         if index == conversationScene.notIndex then
-            insertQuestionBalloon(conversationScene, badReplyTexts[index])
             conversationScene.lost = true
             return false
         else
-            insertQuestionBalloon(conversationScene, okReplyTexts[index])
             return true
         end
     end
