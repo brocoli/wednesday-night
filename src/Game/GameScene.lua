@@ -12,10 +12,20 @@ local ActionDisplay = require("Game.ActionDisplay")
 
 
 
+_G.tutorials = {
+    {
+        scene = "conversationScene",
+        notActions = { 3, 1, 2, 1, 2 },
+    },
+    {
+        scene = "carScene",
+        notActions = { 2, 1, 3, 2, 3 },
+    },
+}
+
 local function performOnFadeIn(gameScene)
     gameScene.fadeIn = nil
     gameScene.fadeOut = 1
-
 
     local actionController = ActionController.new(5)
     actionController:changeParent(gameScene)
@@ -23,40 +33,51 @@ local function performOnFadeIn(gameScene)
     gameScene.actionController = actionController
 
 
+    local currentTutorial = _G.tutorials[#_G.tutorials]
+
     if gameScene.topRightScene then
         gameScene.topRightScene:stop()
         gameScene.topRightScene:removeParent()
+        gameScene.topRightScene = nil
     end
 
-    local carScene = CarScene.new()
-    carScene:changeParent(gameScene)
-    gameScene.topRightScene = carScene
+    if not currentTutorial or currentTutorial.scene == "carScene" then
+        local carScene = CarScene.new()
+        carScene:changeParent(gameScene)
+        gameScene.topRightScene = carScene
+    end
 
 
     if gameScene.bottomRightScene then
         gameScene.bottomRightScene:stop()
         gameScene.bottomRightScene:removeParent()
+        gameScene.bottomRightScene = nil
     end
 
-    local conversationScene = ConversationScene.new()
-    conversationScene:changeParent(gameScene)
-    gameScene.bottomRightScene = conversationScene
+    if not currentTutorial or currentTutorial.scene == "conversationScene" then
+        local conversationScene = ConversationScene.new()
+        conversationScene:changeParent(gameScene)
+        gameScene.bottomRightScene = conversationScene
+    end
 
 
     if gameScene.bottomLeftScene then
         gameScene.bottomLeftScene:stop()
         gameScene.bottomLeftScene:removeParent()
+        gameScene.bottomLeftScene = nil
     end
 
-    local actionDisplay = ActionDisplay.new(gameScene.actionController)
-    actionDisplay:changeParent(gameScene)
-    gameScene.bottomLeftScene = actionDisplay
+    if not currentTutorial then
+        local actionDisplay = ActionDisplay.new(gameScene.actionController)
+        actionDisplay:changeParent(gameScene)
+        gameScene.bottomLeftScene = actionDisplay
+    end
 end
 
 local function onFadeIn(gameScene)
     if not gameScene.waitingForPerformFadeIn then
         gameScene.waitingForPerformFadeIn = true
-        Task.new(1, 1, function()
+        Task.new(gameScene.fadeMessage and 2 or 0.5, 1, function()
             gameScene.waitingForPerformFadeIn = nil
             performOnFadeIn(gameScene)
         end):changeParent(gameScene)
@@ -95,23 +116,46 @@ local function gameWin(gameScene)
 
     Task.new(1, 1, function()
         gameScene.fadeIn = 0
-        gameScene.fadeMessage = function(gameScene, transform, fadeAlpha)
-            love.graphics.setColor(255,255,255,fadeAlpha*255)
-            love.graphics.printf(
-                "You won!\nSpeed up!",
-                transform.x - 45, transform.y - 12,
-                90, "center"
-            )
-            love.graphics.setColor(255,255,255,255)
-        end
 
-        _G.clockSpeed = _G.clockSpeed + math.sqrt(1/_G.clockSpeed)/12
+        local completedTutorial = table.remove(_G.tutorials)
+        if completedTutorial then
+            if #_G.tutorials == 0 then
+                gameScene.fadeMessage = function(gameScene, transform, fadeAlpha)
+                    love.graphics.setColor(255,255,255,fadeAlpha*255)
+                    love.graphics.printf(
+                        string.format(
+                            "Get Ready!\nFrom now on there'll be a timer!",
+                            string.upper(love.keyboard.getKeyFromScancode("z")),
+                            string.upper(love.keyboard.getKeyFromScancode("x")),
+                            string.upper(love.keyboard.getKeyFromScancode("c"))
+                        ),
+                        transform.x - 80, transform.y - 12,
+                        160, "center"
+                    )
+                    love.graphics.setColor(255,255,255,255)
+                end
+            else
+                gameScene.fadeMessage = nil
+            end
+        else
+            _G.clockSpeed = _G.clockSpeed + math.sqrt(1/_G.clockSpeed)/12
+
+            gameScene.fadeMessage = function(gameScene, transform, fadeAlpha)
+                love.graphics.setColor(255,255,255,fadeAlpha*255)
+                love.graphics.printf(
+                    "You won!\nSpeed up!",
+                    transform.x - 45, transform.y - 12,
+                    90, "center"
+                )
+                love.graphics.setColor(255,255,255,255)
+            end
+        end
     end):changeParent(gameScene)
 end
 
 
 local function onLoad(gameScene)
-    _G.clockSpeed = 0.25
+    _G.clockSpeed = 0.125
 
     gameScene.fadeIn = 1
     gameScene.fadeOut = nil
@@ -119,7 +163,7 @@ local function onLoad(gameScene)
         love.graphics.setColor(255,255,255,fadeAlpha*255)
         love.graphics.printf(
             string.format(
-                "Get Ready!\nUse the %s, %s and %s keys",
+                "Daily Sequence\nUse the %s, %s and %s keys",
                 string.upper(love.keyboard.getKeyFromScancode("z")),
                 string.upper(love.keyboard.getKeyFromScancode("x")),
                 string.upper(love.keyboard.getKeyFromScancode("c"))

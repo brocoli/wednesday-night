@@ -74,10 +74,12 @@ local function onLoad(actionController)
 end
 
 local function onUpdate(actionController, dt)
-    actionController.timeRemaining = math.max(0, actionController.timeRemaining - dt*_G.clockSpeed)
+    if not _G.tutorials[#_G.tutorials] then
+        actionController.timeRemaining = math.max(0, actionController.timeRemaining - dt*_G.clockSpeed)
 
-    if actionController.timeRemaining == 0 then
-        Messages.send("gameLose")
+        if actionController.timeRemaining == 0 then
+            Messages.send("gameLose")
+        end
     end
 end
 

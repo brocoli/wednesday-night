@@ -6,7 +6,7 @@ local GameObject = require("GameObject")
 
 local function onDraw(timer, transform)
     love.graphics.setColor(0,0,0,255)
-    love.graphics.rectangle( "fill", transform.x - 5, transform.y - 30, 14, 6)
+    love.graphics.rectangle( "fill", transform.x - 7, transform.y - 30, 14, 6)
     love.graphics.setLineWidth(4)
     love.graphics.arc( "line", transform.x, transform.y -29, 3, 0, -math.pi, 20)
     love.graphics.setLineWidth(2)
