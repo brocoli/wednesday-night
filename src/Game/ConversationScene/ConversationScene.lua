@@ -7,6 +7,7 @@ local SceneFrame = require("Game.SceneFrame")
 
 local QuestionBalloon = require("Game.ConversationScene.QuestionBalloon")
 local AnswerBalloon = require("Game.ConversationScene.AnswerBalloon")
+local Instructions = require("Game.ConversationScene.Instructions")
 
 
 
@@ -29,6 +30,8 @@ local function insertQuestionBalloon(conversationScene, textLines)
     cleanBalloons(conversationScene)
 
     conversationScene.balloonYAnimationOffset = conversationScene.balloonYAnimationOffset + questionBalloon.height + 12
+
+    conversationScene.instructions:changeParent(conversationScene)
 end
 
 local function insertAnswerBalloon(conversationScene, textLines)
@@ -39,6 +42,8 @@ local function insertAnswerBalloon(conversationScene, textLines)
     cleanBalloons(conversationScene)
 
     conversationScene.balloonYAnimationOffset = conversationScene.balloonYAnimationOffset + answerBalloon.height + 12
+
+    conversationScene.instructions:changeParent(conversationScene)
 end
 
 
@@ -57,7 +62,7 @@ local answerTexts = {
     [2] = {
         [1] = {"http://giphy.com/gifs/", "cat-doodle-RgM33sAlSxzfq"},
         [2] = {"Me too."},
-        [3] = {"Hey, I'm looking to", "buy this thing...", "could you take a look?"},
+        [3] = {"Hey, I'm looking to", "buy this thing for us...", "what do you think?"},
     },
     [3] = {
         [1] = {"Sure, but I already told you", "I'm not into THAT,", "you know? :P"},
@@ -129,6 +134,10 @@ local function onLoad(conversationScene)
     conversationScene.maskedGroup = maskedGroup
 
     conversationScene.balloonYAnimationOffset = 0
+
+    local instructions = Instructions.new()
+    instructions:changeParent(maskedGroup)
+    conversationScene.instructions = instructions
 end
 
 local function onUpdate(conversationScene, dt)
@@ -157,6 +166,10 @@ local function onDraw(conversationScene, transform)
         balloon.transform.y = y
         y = y - balloon.height - 12
     end
+
+    local instructions = conversationScene.instructions
+    instructions.transform.x = width/4 - 90
+    instructions.transform.y = -height/4 + 40
 end
 
 

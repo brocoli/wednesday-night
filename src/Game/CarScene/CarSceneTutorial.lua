@@ -16,7 +16,7 @@ local function onDraw(carSceneTutorial, transform)
     love.graphics.setFont(_G.bigFont)
     love.graphics.printf(
         string.format(
-            "22:00 - Returning home.\n\n%s: brake.\n%s: change lanes.\n%s: accelerate.\n\nDon't crash.",
+            "22:00 - Returning home.\n\n%s: brake.\n%s: change lanes.\n%s: accelerate.\n\nDon't crash into other\ncars.",
             string.upper(love.keyboard.getKeyFromScancode("z")),
             string.upper(love.keyboard.getKeyFromScancode("x")),
             string.upper(love.keyboard.getKeyFromScancode("c"))

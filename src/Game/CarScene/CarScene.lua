@@ -8,6 +8,7 @@ local SceneFrame = require("Game.SceneFrame")
 local Background = require("Game.CarScene.Background")
 local Car = require("Game.CarScene.Car")
 local Floor = require("Game.CarScene.Floor")
+local Instructions = require("Game.CarScene.Instructions")
 
 
 
@@ -37,6 +38,11 @@ local function runAction(carScene, index)
             floor:stop()
             floor:removeParent()
             carScene.floor = nil
+
+            local instructions = carScene.instructions
+            instructions:stop()
+            instructions:removeParent()
+            carScene.instructions = nil
 
             carScene.lost = true
             return false
@@ -91,6 +97,10 @@ local function onLoad(carScene)
     local floor = Floor.new()
     floor:changeParent(maskedGroup)
     carScene.floor = floor
+
+    local instructions = Instructions.new()
+    instructions:changeParent(maskedGroup)
+    carScene.instructions = instructions
 end
 
 local function onUpdate(carScene, dt)
@@ -114,10 +124,10 @@ local function onUpdate(carScene, dt)
             carScene.enemyX = math.min(-1.1, carScene.enemyX + dt*8*_G.clockSpeed)
         end
     elseif notIndex == 2 then -- can't switch lanes
-        if carScene.enemyX > 0.5 then
-            carScene.enemyX = math.max(0.5, carScene.enemyX - dt*8*_G.clockSpeed)
+        if carScene.enemyX > 0.2 then
+            carScene.enemyX = math.max(0.2, carScene.enemyX - dt*8*_G.clockSpeed)
         else
-            carScene.enemyX = math.min(0.5, carScene.enemyX + dt*8*_G.clockSpeed)
+            carScene.enemyX = math.min(0.2, carScene.enemyX + dt*8*_G.clockSpeed)
         end
     end
 end
@@ -144,6 +154,10 @@ local function onDraw(carScene, transform)
         local floor = carScene.floor
         floor.position = carScene.position
         floor.transform.y = height/4 - 50
+
+        local instructions = carScene.instructions
+        instructions.transform.x = width/4 - 90
+        instructions.transform.y = -height/4 + 40
     end
 end
 
