@@ -6,7 +6,11 @@ local Task = require("Task")
 local Responder = require("Components.Responder")
 
 local CarScene = require("Game.CarScene.CarScene")
+local CarSceneTutorial = require("Game.CarScene.CarSceneTutorial")
+
 local ConversationScene = require("Game.ConversationScene.ConversationScene")
+local ConversationSceneTutorial = require("Game.ConversationScene.ConversationSceneTutorial")
+
 local ActionController = require("Game.ActionController")
 local ActionDisplay = require("Game.ActionDisplay")
 
@@ -35,43 +39,54 @@ local function performOnFadeIn(gameScene)
 
     local currentTutorial = _G.tutorials[#_G.tutorials]
 
+    if gameScene.topLeftScene then
+        gameScene.topLeftScene:stop()
+        gameScene.topLeftScene:removeParent()
+        gameScene.topLeftScene = nil
+    end
     if gameScene.topRightScene then
         gameScene.topRightScene:stop()
         gameScene.topRightScene:removeParent()
         gameScene.topRightScene = nil
     end
-
-    if not currentTutorial or currentTutorial.scene == "carScene" then
-        local carScene = CarScene.new()
-        carScene:changeParent(gameScene)
-        gameScene.topRightScene = carScene
-    end
-
-
     if gameScene.bottomRightScene then
         gameScene.bottomRightScene:stop()
         gameScene.bottomRightScene:removeParent()
         gameScene.bottomRightScene = nil
     end
-
-    if not currentTutorial or currentTutorial.scene == "conversationScene" then
-        local conversationScene = ConversationScene.new()
-        conversationScene:changeParent(gameScene)
-        gameScene.bottomRightScene = conversationScene
-    end
-
-
     if gameScene.bottomLeftScene then
         gameScene.bottomLeftScene:stop()
         gameScene.bottomLeftScene:removeParent()
         gameScene.bottomLeftScene = nil
     end
 
-    if not currentTutorial then
-        local actionDisplay = ActionDisplay.new(gameScene.actionController)
-        actionDisplay:changeParent(gameScene)
-        gameScene.bottomLeftScene = actionDisplay
+    if not currentTutorial or currentTutorial.scene == "carScene" then
+        local carScene = CarScene.new()
+        carScene:changeParent(gameScene)
+        gameScene.topRightScene = carScene
+
+        if currentTutorial then
+            local carSceneTutorial = CarSceneTutorial.new()
+            carSceneTutorial:changeParent(gameScene)
+            gameScene.topLeftScene = carSceneTutorial
+        end
     end
+
+    if not currentTutorial or currentTutorial.scene == "conversationScene" then
+        local conversationScene = ConversationScene.new()
+        conversationScene:changeParent(gameScene)
+        gameScene.bottomRightScene = conversationScene
+
+        if currentTutorial then
+            local conversationSceneTutorial = ConversationSceneTutorial.new()
+            conversationSceneTutorial:changeParent(gameScene)
+            gameScene.topRightScene = conversationSceneTutorial
+        end
+    end
+
+    local actionDisplay = ActionDisplay.new(gameScene.actionController)
+    actionDisplay:changeParent(gameScene)
+    gameScene.bottomLeftScene = actionDisplay
 end
 
 local function onFadeIn(gameScene)
@@ -101,11 +116,13 @@ local function gameLose(gameScene, reason)
         gameScene.fadeIn = 0
         gameScene.fadeMessage = function(gameScene, transform, fadeAlpha)
             love.graphics.setColor(255,255,255,fadeAlpha*255)
+            love.graphics.setFont(_G.bigFont)
             love.graphics.printf(
                 "You lost.\nTry again!",
-                transform.x - 45, transform.y - 12,
-                90, "center"
+                transform.x - 300, transform.y - 30,
+                600, "center"
             )
+            love.graphics.setFont(_G.font)
             love.graphics.setColor(255,255,255,255)
         end
     end):changeParent(gameScene)
@@ -122,16 +139,18 @@ local function gameWin(gameScene)
             if #_G.tutorials == 0 then
                 gameScene.fadeMessage = function(gameScene, transform, fadeAlpha)
                     love.graphics.setColor(255,255,255,fadeAlpha*255)
+                    love.graphics.setFont(_G.bigFont)
                     love.graphics.printf(
                         string.format(
-                            "Get Ready!\nFrom now on there'll be a timer!",
+                            "Good.\nNow, get ready!",
                             string.upper(love.keyboard.getKeyFromScancode("z")),
                             string.upper(love.keyboard.getKeyFromScancode("x")),
                             string.upper(love.keyboard.getKeyFromScancode("c"))
                         ),
-                        transform.x - 80, transform.y - 12,
-                        160, "center"
+                        transform.x - 90, transform.y - 8,
+                        180, "center"
                     )
+                    love.graphics.setFont(_G.font)
                     love.graphics.setColor(255,255,255,255)
                 end
             else
@@ -142,11 +161,13 @@ local function gameWin(gameScene)
 
             gameScene.fadeMessage = function(gameScene, transform, fadeAlpha)
                 love.graphics.setColor(255,255,255,fadeAlpha*255)
+                love.graphics.setFont(_G.bigFont)
                 love.graphics.printf(
                     "You won!\nSpeed up!",
                     transform.x - 45, transform.y - 12,
                     90, "center"
                 )
+                love.graphics.setFont(_G.font)
                 love.graphics.setColor(255,255,255,255)
             end
         end
@@ -155,28 +176,35 @@ end
 
 
 local function onLoad(gameScene)
-    _G.clockSpeed = 0.125
+    _G.clockSpeed = 0.2
 
     gameScene.fadeIn = 1
     gameScene.fadeOut = nil
     gameScene.fadeMessage = function(gameScene, transform, fadeAlpha)
         love.graphics.setColor(255,255,255,fadeAlpha*255)
+        love.graphics.setFont(_G.bigFont)
         love.graphics.printf(
             string.format(
-                "Daily Sequence\nUse the %s, %s and %s keys",
+                "Wednesday Night\n\nUse the %s, %s and %s keys",
                 string.upper(love.keyboard.getKeyFromScancode("z")),
                 string.upper(love.keyboard.getKeyFromScancode("x")),
                 string.upper(love.keyboard.getKeyFromScancode("c"))
             ),
-            transform.x - 80, transform.y - 12,
-            160, "center"
+            transform.x - 300, transform.y - 50,
+            600, "center"
         )
+        love.graphics.setFont(_G.font)
         love.graphics.setColor(255,255,255,255)
     end
 end
 
 local function onDraw(gameScene, transform)
     local width, height = love.graphics.getDimensions()
+
+    if gameScene.topLeftScene then
+        gameScene.topLeftScene.transform.x = -width/4
+        gameScene.topLeftScene.transform.y = -height/4
+    end
 
     if gameScene.topRightScene then
         gameScene.topRightScene.transform.x = width/4

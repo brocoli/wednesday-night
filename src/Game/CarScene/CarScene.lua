@@ -74,7 +74,7 @@ local function onLoad(carScene)
 
     carScene.position = 0
     carScene.velocity = 100
-    carScene.enemyX = 2
+    carScene.enemyX = 1.5
 
     local background = Background.new()
     background:changeParent(maskedGroup)

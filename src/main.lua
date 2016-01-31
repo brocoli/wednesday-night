@@ -9,6 +9,7 @@ local Transform = require("Transform")
 
 -- Init
 
+_G.bigFont = love.graphics.newFont(30)
 _G.font = love.graphics.newFont(12)
 love.graphics.setFont(_G.font)
 

@@ -24,9 +24,11 @@ local function onLoad(actionDisplay)
     local sceneFrame = SceneFrame.new()
     sceneFrame:changeParent(actionDisplay)
 
-    local timer = Timer.new()
-    timer:changeParent(actionDisplay)
-    actionDisplay.timer = timer
+    if #_G.tutorials == 0 then
+        local timer = Timer.new()
+        timer:changeParent(actionDisplay)
+        actionDisplay.timer = timer
+    end
 
     actionDisplay.font = love.graphics.newFont(30)
 end
@@ -34,10 +36,12 @@ end
 local function onDraw(actionDisplay, transform)
     local width, height = love.graphics.getDimensions()
 
-    actionDisplay.timer.transform.x = width/4
-    actionDisplay.timer.transform.y = -height/4
+    if actionDisplay.timer then
+        actionDisplay.timer.transform.x = width/4
+        actionDisplay.timer.transform.y = -height/4
 
-    actionDisplay.timer.timeRemaining = actionDisplay.actionController.timeRemaining
+        actionDisplay.timer.timeRemaining = actionDisplay.actionController.timeRemaining
+    end
 
     local amountActions = actionDisplay.actionController.amountActions
     local left = -width/4 + 4
