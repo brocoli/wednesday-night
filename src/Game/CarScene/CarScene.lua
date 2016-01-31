@@ -46,8 +46,18 @@ local function runAction(carScene, index)
 
             carScene.lost = true
             return false
-        else
-            -- FIXME : own car animation
+        elseif index == 1 then
+            carScene.carMovementX = -2
+            carScene.carMovementShape = 1
+            carScene.carMovementSign = -1
+            return true
+        elseif index == 2 then
+            --TODO how???
+            return true
+        elseif index == 3 then
+            carScene.carMovementX = 2
+            carScene.carMovementShape = -1
+            carScene.carMovementSign = 1
             return true
         end
     end
@@ -82,6 +92,10 @@ local function onLoad(carScene)
     carScene.velocity = 100
     carScene.enemyX = 1.5
 
+    carScene.carMovementX = 0
+    carScene.carMovementShape = 1
+    carScene.carMovementSign = 1
+
     local background = Background.new()
     background:changeParent(maskedGroup)
     carScene.background = background
@@ -105,6 +119,13 @@ end
 
 local function onUpdate(carScene, dt)
     carScene.position = carScene.position + carScene.velocity*dt
+
+    local carMovementX = carScene.carMovementX
+    if carMovementX > 0 then
+        carScene.carMovementX = math.max(0, carMovementX - dt*16*_G.clockSpeed)
+    elseif carMovementX < 0 then
+        carScene.carMovementX = math.min(0, carMovementX + dt*16*_G.clockSpeed)
+    end
 
     local notIndex = carScene.notIndex
     if notIndex == 3 then -- can't accelerate
@@ -145,8 +166,11 @@ local function onDraw(carScene, transform)
         enemy.transform.xScale = 0.66
         enemy.transform.yScale = 0.66
 
+        local poly = carScene.carMovementX + carScene.carMovementShape
+
         local car = carScene.car
         car.position = carScene.position
+        car.transform.x = carScene.carMovementSign * 80 * (1 - poly*poly)
         car.transform.y = height/4 - 50
         car.transform.xScale = 0.75
         car.transform.yScale = 0.75
