@@ -9,4 +9,4 @@
 ----
 ## Instructions for Windows only
 
-Alternatively, you should be able to run the wednesday-night.exe executable out of the box.
+Alternatively, you can just extract the windows-wednesday-night.zip file somewhere in your computer, and then run the wednesday-night.exe executable!
