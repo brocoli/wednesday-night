@@ -12,10 +12,10 @@ local Instructions = require("Game.ConversationScene.Instructions")
 
 
 local talkSources = {
-    love.audio.newSource("assets/talk1.wav"),
-    love.audio.newSource("assets/talk2.wav"),
-    love.audio.newSource("assets/talk3.wav"),
-    love.audio.newSource("assets/talk4.wav"),
+    love.audio.newSource("assets/talk1.ogg"),
+    love.audio.newSource("assets/talk2.ogg"),
+    love.audio.newSource("assets/talk3.ogg"),
+    love.audio.newSource("assets/talk4.ogg"),
 }
 
 local function cleanBalloons(conversationScene)

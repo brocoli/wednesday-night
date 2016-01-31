@@ -7,7 +7,7 @@ local Responder = require("Components.Responder")
 
 
 
-local alarmSound = love.audio.newSource("assets/alarm.wav")
+local alarmSound = love.audio.newSource("assets/alarm.ogg")
 
 local function afterRunAction(actionController, action, results)
     local lost = false

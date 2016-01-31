@@ -12,9 +12,9 @@ local Instructions = require("Game.CarScene.Instructions")
 
 
 
-local motorSound = love.audio.newSource("assets/motor.wav")
+local motorSound = love.audio.newSource("assets/motor.ogg")
 local motorbgSound = love.audio.newSource("assets/motorbg.ogg")
-local explosionSound = love.audio.newSource("assets/explosion.wav")
+local explosionSound = love.audio.newSource("assets/explosion.ogg")
 
 motorbgSound:setLooping(true)
 
