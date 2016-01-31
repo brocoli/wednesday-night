@@ -1,2 +1,15 @@
 release/
 windows-wednesday-night/
+OpenAL32.dll
+SDL2.dll
+changes.txt
+game.ico
+license.txt
+love.dll
+love.exe
+love.ico
+lua51.dll
+mpg123.dll
+msvcp120.dll
+msvcr120.dll
+readme.txt
