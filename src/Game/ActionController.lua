@@ -74,7 +74,7 @@ local function onLoad(actionController)
 end
 
 local function onUpdate(actionController, dt)
-    actionController.timeRemaining = math.max(0, actionController.timeRemaining - dt*actionController.clockSpeed)
+    actionController.timeRemaining = math.max(0, actionController.timeRemaining - dt*_G.clockSpeed)
 
     if actionController.timeRemaining == 0 then
         Messages.send("gameLose")
@@ -82,7 +82,7 @@ local function onUpdate(actionController, dt)
 end
 
 
-local function new(amountActions, clockSpeed)
+local function new(amountActions)
     local actionController = GameObject.new({
         onLoad = onLoad,
         onUpdate = onUpdate,
@@ -92,7 +92,6 @@ local function new(amountActions, clockSpeed)
     actionController.prepareNextAction = prepareNextAction
 
     actionController.amountActions = amountActions
-    actionController.clockSpeed = clockSpeed
 
     actionController:compose("responder", Responder.new({
         prepareAction = prepareAction,

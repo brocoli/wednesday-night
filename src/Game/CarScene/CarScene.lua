@@ -99,25 +99,25 @@ local function onUpdate(carScene, dt)
     local notIndex = carScene.notIndex
     if notIndex == 3 then -- can't accelerate
         if carScene.enemyX < -1 then
-            carScene.enemyX = ((math.max(-2.4, carScene.enemyX - dt*0.5) + 1.5)%3 - 1.5)
+            carScene.enemyX = ((math.max(-2.4, carScene.enemyX - dt*8*_G.clockSpeed) + 1.5)%3 - 1.5)
         elseif carScene.enemyX < 1.1 then
-            carScene.enemyX = math.min(1.1, carScene.enemyX + dt*0.5)
+            carScene.enemyX = math.min(1.1, carScene.enemyX + dt*8*_G.clockSpeed)
         else
-            carScene.enemyX = math.max(1.1, carScene.enemyX - dt*0.5)
+            carScene.enemyX = math.max(1.1, carScene.enemyX - dt*8*_G.clockSpeed)
         end
     elseif notIndex == 1 then --- can't brake
         if carScene.enemyX > 1 then
-            carScene.enemyX = ((math.min(2.4, carScene.enemyX + dt*0.5) + 1.5)%3 - 1.5)
+            carScene.enemyX = ((math.min(2.4, carScene.enemyX + dt*8*_G.clockSpeed) + 1.5)%3 - 1.5)
         elseif carScene.enemyX > -1.1 then
-            carScene.enemyX = math.max(-1.1, carScene.enemyX - dt*0.5)
+            carScene.enemyX = math.max(-1.1, carScene.enemyX - dt*8*_G.clockSpeed)
         else
-            carScene.enemyX = math.min(-1.1, carScene.enemyX + dt*0.5)
+            carScene.enemyX = math.min(-1.1, carScene.enemyX + dt*8*_G.clockSpeed)
         end
     elseif notIndex == 2 then -- can't switch lanes
         if carScene.enemyX > 0.5 then
-            carScene.enemyX = math.max(0.5, carScene.enemyX - dt*0.5)
+            carScene.enemyX = math.max(0.5, carScene.enemyX - dt*8*_G.clockSpeed)
         else
-            carScene.enemyX = math.min(0.5, carScene.enemyX + dt*0.5)
+            carScene.enemyX = math.min(0.5, carScene.enemyX + dt*8*_G.clockSpeed)
         end
     end
 end

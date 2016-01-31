@@ -115,7 +115,7 @@ local function onLoad(conversationScene)
 end
 
 local function onUpdate(conversationScene, dt)
-    conversationScene.balloonYAnimationOffset = math.max(0, conversationScene.balloonYAnimationOffset - dt*200)
+    conversationScene.balloonYAnimationOffset = math.max(0, conversationScene.balloonYAnimationOffset - dt*800*_G.clockSpeed)
 end
 
 local function onDraw(conversationScene, transform)

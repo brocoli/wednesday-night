@@ -12,12 +12,12 @@ local ActionDisplay = require("Game.ActionDisplay")
 
 
 
-local function onFadeIn(gameScene)
+local function performOnFadeIn(gameScene)
     gameScene.fadeIn = nil
     gameScene.fadeOut = 1
 
 
-    local actionController = ActionController.new(5, 0.25)
+    local actionController = ActionController.new(5)
     actionController:changeParent(gameScene)
     actionController:stop()
     gameScene.actionController = actionController
@@ -53,31 +53,82 @@ local function onFadeIn(gameScene)
     gameScene.bottomLeftScene = actionDisplay
 end
 
+local function onFadeIn(gameScene)
+    if not gameScene.waitingForPerformFadeIn then
+        gameScene.waitingForPerformFadeIn = true
+        Task.new(1, 1, function()
+            gameScene.waitingForPerformFadeIn = nil
+            performOnFadeIn(gameScene)
+        end):changeParent(gameScene)
+    end
+end
+
 local function onFadeOut(gameScene)
     gameScene.fadeIn = nil
     gameScene.fadeOut = nil
+    gameScene.fadeMessage = nil
 
     gameScene.actionController:start()
     gameScene.actionController:prepareNextAction()
 end
 
 
-local function gameLose(gameScene)
+local function gameLose(gameScene, reason)
     gameScene.actionController:stop()
 
     Task.new(1, 1, function()
         gameScene.fadeIn = 0
+        gameScene.fadeMessage = function(gameScene, transform, fadeAlpha)
+            love.graphics.setColor(255,255,255,fadeAlpha*255)
+            love.graphics.printf(
+                "You lost.\nTry again!",
+                transform.x - 45, transform.y - 12,
+                90, "center"
+            )
+            love.graphics.setColor(255,255,255,255)
+        end
     end):changeParent(gameScene)
 end
 
 local function gameWin(gameScene)
     gameScene.actionController:stop()
+
+    Task.new(1, 1, function()
+        gameScene.fadeIn = 0
+        gameScene.fadeMessage = function(gameScene, transform, fadeAlpha)
+            love.graphics.setColor(255,255,255,fadeAlpha*255)
+            love.graphics.printf(
+                "You won!\nSpeed up!",
+                transform.x - 45, transform.y - 12,
+                90, "center"
+            )
+            love.graphics.setColor(255,255,255,255)
+        end
+
+        _G.clockSpeed = _G.clockSpeed + math.sqrt(1/_G.clockSpeed)/12
+    end):changeParent(gameScene)
 end
 
 
 local function onLoad(gameScene)
+    _G.clockSpeed = 0.25
+
     gameScene.fadeIn = 1
     gameScene.fadeOut = nil
+    gameScene.fadeMessage = function(gameScene, transform, fadeAlpha)
+        love.graphics.setColor(255,255,255,fadeAlpha*255)
+        love.graphics.printf(
+            string.format(
+                "Get Ready!\nUse the %s, %s and %s keys",
+                string.upper(love.keyboard.getKeyFromScancode("z")),
+                string.upper(love.keyboard.getKeyFromScancode("x")),
+                string.upper(love.keyboard.getKeyFromScancode("c"))
+            ),
+            transform.x - 80, transform.y - 12,
+            160, "center"
+        )
+        love.graphics.setColor(255,255,255,255)
+    end
 end
 
 local function onDraw(gameScene, transform)
@@ -107,19 +158,26 @@ local function afterDraw(gameScene, transform)
         love.graphics.setColor(0,0,0,fadeAlpha*255)
         love.graphics.rectangle( "fill", -2, -2, width + 4, height + 4 )
         love.graphics.setColor(255,255,255,255)
+
+        local fadeMessage = gameScene.fadeMessage
+        if fadeMessage then
+            fadeMessage(gameScene, transform, fadeAlpha)
+        end
     end
 end
 
 local function onUpdate(gameScene, dt)
     if gameScene.fadeIn then
-        gameScene.fadeIn = math.min(1, gameScene.fadeIn + dt*0.5)
         if gameScene.fadeIn == 1 then
             onFadeIn(gameScene)
+        else
+            gameScene.fadeIn = math.min(1, gameScene.fadeIn + dt*3)
         end
     elseif gameScene.fadeOut then
-        gameScene.fadeOut = math.max(0, gameScene.fadeOut - dt*0.5)
         if gameScene.fadeOut == 0 then
             onFadeOut(gameScene)
+        else
+            gameScene.fadeOut = math.max(0, gameScene.fadeOut - dt*3)
         end
     end
 end
